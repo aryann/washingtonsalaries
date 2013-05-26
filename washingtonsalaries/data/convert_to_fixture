@@ -1,0 +1,111 @@
+#!/usr/bin/env python
+"""
+A command-line tool for converting Washington state employee salary
+data[1] into a fixture suitable for Django.
+
+This tool assumes that the data file is a CSV file with the following
+columns: agency title, employee, job title, 2010 salary, 2011 salary,
+2012 salary.
+
+The resulting fixture is written to stdout.
+
+[1] Available from http://fiscal.wa.gov/Salaries.aspx.
+"""
+
+import csv
+import json
+import itertools
+import sys
+
+DATA_PER_ROW = 6
+
+
+def map_to_model(records, emit_fn):
+    return (emit_fn(*record) for record in records)
+
+
+def emit_agency(pk, name):
+    return {
+        'model': 'washingtonsalaries.agency',
+        'pk': pk,
+        'fields': {
+            'name': name,
+            },
+        }
+
+
+def emit_employee(pk, name, title, agency_pk):
+    return {
+        'model': 'washingtonsalaries.employee',
+        'pk': pk,
+        'fields': {
+            'name': name,
+            'title': title,
+            'agency': agency_pk,
+            },
+        }
+
+
+def emit_salary(pk, year, salary, employee_pk):
+    assert 2010 <= year <= 2012
+    salary = int(salary.replace(',', ''))
+    return {
+        'model': 'washingtonsalaries.annualsalary',
+        'pk': pk,
+        'fields': {
+            'year': year,
+            'salary': salary,
+            'employee': employee_pk,
+            },
+        }
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        sys.stderr.write('Please provide a file name.')
+        sys.exit(1)
+
+    lines_to_process = int(sys.argv[2]) if len(sys.argv) == 3 else None
+
+    agencies = []
+    employees = []
+    salaries = []
+
+    with open(sys.argv[1]) as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        reader.next()  # Skips the header.
+
+        line = 0
+        for row in reader:
+            if not row:
+                continue
+
+            assert len(row) == DATA_PER_ROW, (
+                'Found malformed data on line {0}: {1}'.format(line, row))
+
+            agency, name, title, sal_2010, sal_2011, sal_2012 = row
+
+            if not agencies or agencies[-1][1] != agency:
+                agencies.append((len(agencies), agency))
+
+            employees.append((line, name, title, len(agencies) - 1))
+
+            salary_data = {
+                2010: sal_2010,
+                2011: sal_2011,
+                2012: sal_2012,
+                }
+            for year, salary in salary_data.iteritems():
+                salaries.append(
+                    (len(salaries), year, salary, len(employees) - 1))
+
+            line += 1
+            if line >= lines_to_process:
+                break
+
+        print json.dumps(list(itertools.chain(
+                    map_to_model(agencies, emit_agency),
+                    map_to_model(employees, emit_employee),
+                    map_to_model(salaries, emit_salary),
+                    )),
+                         indent=4)
