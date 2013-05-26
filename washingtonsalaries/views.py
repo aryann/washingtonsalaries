@@ -8,8 +8,17 @@ MAX_RESULTS_PER_PAGE = 25
 
 
 def search(request):
+    """
+    Handles searches. This handler accepts a GET parameter q for the
+    search query and an optional parameter page that allows the client
+    to page through the results.
+    """
 
     def emit_search_result(employee):
+        """
+        Returns the pieces of data that will be sent to the client for
+        the given employee.
+        """
         return {
             'name': employee.name,
             'title': employee.title,
@@ -32,8 +41,8 @@ def search(request):
         matches = pager.page(request.GET.get('page', 1))
     except paginator.EmptyPage:
         return http.HttpResponseBadRequest(
-            'GET parameter page must be in range [{0}, {1}].'.format(
-                1, pager.num_pages))
+            'GET parameter page must be in range [1, {0}].'.format(
+                pager.num_pages))
     except paginator.PageNotAnInteger:
         return http.HttpResponseBadRequest(
             'GET parameter page must be an integer.')
