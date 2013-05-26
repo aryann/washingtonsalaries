@@ -17,7 +17,7 @@ import json
 import itertools
 import sys
 
-DATA_PER_ROW = 6
+COLS_PER_ROW = 6
 
 
 def map_to_model(records, emit_fn):
@@ -80,7 +80,7 @@ if __name__ == '__main__':
             if not row:
                 continue
 
-            assert len(row) == DATA_PER_ROW, (
+            assert len(row) == COLS_PER_ROW, (
                 'Found malformed data on line {0}: {1}'.format(line, row))
 
             agency, name, title, sal_2010, sal_2011, sal_2012 = row
@@ -100,7 +100,7 @@ if __name__ == '__main__':
                     (len(salaries), year, salary, len(employees) - 1))
 
             line += 1
-            if line >= lines_to_process:
+            if lines_to_process is not None and line >= lines_to_process:
                 break
 
         print json.dumps(list(itertools.chain(
