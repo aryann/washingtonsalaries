@@ -83,12 +83,13 @@ if __name__ == '__main__':
             assert len(row) == COLS_PER_ROW, (
                 'Found malformed data on line {0}: {1}'.format(line, row))
 
+            line += 1
             agency, name, title, sal_2010, sal_2011, sal_2012 = row
 
             if not agencies or agencies[-1][1] != agency:
-                agencies.append((len(agencies), agency))
+                agencies.append((len(agencies) + 1, agency))
 
-            employees.append((line, name, title, len(agencies) - 1))
+            employees.append((line, name, title, len(agencies)))
 
             salary_data = {
                 2010: sal_2010,
@@ -97,9 +98,8 @@ if __name__ == '__main__':
                 }
             for year, salary in salary_data.iteritems():
                 salaries.append(
-                    (len(salaries), year, salary, len(employees) - 1))
+                    (len(salaries), year, salary, len(employees)))
 
-            line += 1
             if lines_to_process is not None and line >= lines_to_process:
                 break
 
