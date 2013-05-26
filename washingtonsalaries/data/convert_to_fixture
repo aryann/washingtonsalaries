@@ -62,7 +62,7 @@ def emit_salary(pk, year, salary, employee_pk):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        sys.stderr.write('Please provide a file name.')
+        sys.stderr.write('Please provide a file name.\n')
         sys.exit(1)
 
     lines_to_process = int(sys.argv[2]) if len(sys.argv) == 3 else None
@@ -98,7 +98,7 @@ if __name__ == '__main__':
                 }
             for year, salary in salary_data.iteritems():
                 salaries.append(
-                    (len(salaries), year, salary, len(employees)))
+                    (len(salaries) + 1, year, salary, len(employees)))
 
             if lines_to_process is not None and line >= lines_to_process:
                 break
