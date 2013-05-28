@@ -48,7 +48,6 @@ def emit_employee(pk, name, title, agency_pk):
 
 def emit_salary(pk, year, salary, employee_pk):
     assert 2010 <= year <= 2012
-    salary = int(salary.replace(',', ''))
     return {
         'model': 'washingtonsalaries.annualsalary',
         'pk': pk,
@@ -97,6 +96,9 @@ if __name__ == '__main__':
                 2012: sal_2012,
                 }
             for year, salary in salary_data.iteritems():
+                salary = int(salary.replace(',', ''))
+                if salary == 0:  # 0 -> no data point, so don't save anything.
+                    continue
                 salaries.append(
                     (len(salaries) + 1, year, salary, len(employees)))
 
