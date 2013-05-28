@@ -4,6 +4,65 @@
   <head>
     <meta charset="utf-8" />
 
+    <style type="text/css">
+      body {
+        font-size: 0.9em;
+      }
+
+      #container {
+        margin: 0 auto;
+      }
+
+      h1, h2, h3 {
+        margin: 0.5em 0;
+      }
+
+      article {
+        background-color: #eee;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        padding: 15px;
+        margin: 15px auto;
+        width: 400px;
+      }
+
+      #searchbox {
+        width: 400px;
+        padding: 0;
+        margin: 15px auto;
+      }
+
+      #searchbox input {
+        font-size: 2em;
+        width: 100%;
+      }
+
+      article table {
+        background-color: #ccc;
+        border-spacing: 1px;
+        width: 100%;
+      }
+
+      th, td {
+        background-color: #eee;
+        padding: 5px;
+      }
+
+      a {
+        color: blue;
+        text-decoration: none;
+        border-bottom: 1px solid blue;
+      }
+
+      a:hover {
+        border-bottom-width: 2px;
+      }
+
+      .salary {
+        text-align: center;
+      }
+    </style>
+
     <script src="{% static 'js/angular.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
     <script src="{% static 'js/controllers.js' %}"></script>

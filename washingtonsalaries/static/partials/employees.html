@@ -1,32 +1,27 @@
-<table>
-  <tbody ng-repeat="employee in employees">
-    <tr>
-      <th>Name</th>
-      <td colspan="{{employee.earnings.length}}">
-        <a href="#/employees/{{employee.id}}">{{employee.name}}</a>
-      </td>
-    </tr>
-    <tr>
-      <th>Title</th>
-      <td colspan="{{employee.earnings.length}}">{{employee.title}}</td>
-    </tr>
+<article ng-repeat="employee in employees">
+  <h1>
+    <a href="#/employees/{{employee.id}}">{{employee.name}}</a>
+  </h1>
+  <h2>
+    {{employee.title}}
+  </h2>
+  <h3>
+    {{employee.agency.name}}
+  </h3>
 
-    <tr>
-      <th>Agency</th>
-      <td colspan="{{employee.earnings.length}}">{{employee.agency.name}}</td>
-    </tr>
 
+  <table>
     <tr>
-      <th rowspan="2">Earnings</th>
+      <th rowspan="2">ANNUAL EARNINGS</th>
       <th ng-repeat="point in employee.earnings">
         {{point.year}}
       </th>
     </tr>
-
     <tr>
-      <td ng-repeat="point in employee.earnings">
+      <td ng-repeat="point in employee.earnings" class="salary">
         {{point.amount | salary}}
       </td>
     </tr>
-  </tbody>
-</table>
+  </table>
+
+</article>
