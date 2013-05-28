@@ -22,7 +22,7 @@
 
   <tr>
     <td ng-repeat="point in employee.earnings">
-      ${{point.amount}}
+      {{point.amount | salary}}
     </td>
   </tr>
 </table>
