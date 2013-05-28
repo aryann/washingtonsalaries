@@ -18,9 +18,13 @@ def emit_search_result(employee):
         'id': employee.pk,
         'name': employee.name,
         'title': employee.title,
-        'agency': employee.agency.name,
+        'agency': {
+            'id': employee.agency.id,
+            'name': employee.agency.name,
+            },
         'earnings': [
-            {'year': record.year,
+            {'id': record.pk,
+             'year': record.year,
              'amount': record.salary}
             for record in employee.annualsalary_set.order_by('year').all()
             ],
