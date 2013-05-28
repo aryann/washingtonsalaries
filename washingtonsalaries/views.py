@@ -2,6 +2,7 @@ import json
 import models
 
 from django import http
+from django import shortcuts
 from django.core import paginator
 
 MAX_RESULTS_PER_PAGE = 25
@@ -20,6 +21,7 @@ def search(request):
         the given employee.
         """
         return {
+            'id': employee.pk,
             'name': employee.name,
             'title': employee.title,
             'agency': employee.agency.name,
@@ -57,3 +59,7 @@ def search(request):
 
     return http.HttpResponse(json.dumps(result, indent=4),
                              content_type='application/json')
+
+
+def index(request):
+    return shortcuts.render(request, 'index.html', {})

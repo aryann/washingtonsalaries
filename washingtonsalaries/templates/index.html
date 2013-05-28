@@ -1,0 +1,47 @@
+{% load staticfiles %}
+<!doctype html>
+<html lang="en" ng-app>
+  <head>
+    <meta charset="utf-8" />
+
+    <script src="{% static 'js/angular.js' %}"></script>
+    <script src="{% static 'js/controllers.js' %}"></script>
+  </head>
+
+  {% verbatim %}
+  <body ng-controller="SearchController">
+
+    <input type="text" ng-model="query" ng-change="doQuery()" placeholder="Search" />
+
+    <table ng-repeat="employee in employees">
+      <tr>
+	<th>Name</th>
+	<td colspan="{{employee.earnings.length}}"><a href="#/employees/{{employee.id}}">{{employee.name}}</a></td>
+      </tr>
+      <tr>
+	<th>Title</th>
+	<td colspan="{{employee.earnings.length}}">{{employee.title}}</td>
+      </tr>
+
+      <tr>
+	<th>Agency</th>
+	<td colspan="{{employee.earnings.length}}">{{employee.agency}}</td>
+      </tr>
+
+      <tr>
+	<th rowspan="2">Earnings</th>
+	<th ng-repeat="point in employee.earnings">
+	  {{point.year}}
+	</th>
+      </tr>
+
+      <tr>
+	<td ng-repeat="point in employee.earnings">
+	  ${{point.amount}}
+	</td>
+      </tr>
+    </table>
+
+  </body>
+  {% endverbatim %}
+</html>
