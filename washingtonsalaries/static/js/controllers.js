@@ -9,4 +9,11 @@ var SearchController = function($scope, $http) {
   };
 };
 
+var EmployeeController = function($scope, $routeParams, $http) {
+  $http.get("employees/" + $routeParams.employeeId).success(function(data) {
+      $scope.employees = [data];
+    });
+};
+
 SearchController.$inject = ["$scope", "$http"];
+EmployeeController.$inject = ["$scope", "$routeParams", "$http"];

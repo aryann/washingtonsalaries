@@ -8,30 +8,39 @@ from django.core import paginator
 MAX_RESULTS_PER_PAGE = 25
 
 
+def emit_search_result(employee):
+    """
+    Stiches the given employee with his or her salary information and
+    agency. The result will be a JSON-serializable object suitable for
+    client consumption.
+    """
+    return {
+        'id': employee.pk,
+        'name': employee.name,
+        'title': employee.title,
+        'agency': employee.agency.name,
+        'earnings': [
+            {'year': record.year,
+             'amount': record.salary}
+            for record in employee.annualsalary_set.order_by('year').all()
+            ],
+        }
+
+
+def json_response(obj):
+    """
+    Returns an HttpResponse constructed from JSON serializing obj.
+    """
+    return http.HttpResponse(json.dumps(obj, indent=4),
+                             content_type='application/json')
+
+
 def search(request):
     """
     Handles searches. This handler accepts a GET parameter q for the
     search query and an optional parameter page that allows the client
     to page through the results.
     """
-
-    def emit_search_result(employee):
-        """
-        Returns the pieces of data that will be sent to the client for
-        the given employee.
-        """
-        return {
-            'id': employee.pk,
-            'name': employee.name,
-            'title': employee.title,
-            'agency': employee.agency.name,
-            'earnings': [
-                {'year': record.year,
-                 'amount': record.salary}
-                for record in employee.annualsalary_set.order_by('year').all()
-                ],
-            }
-
     query = request.GET.get('q')
     if query is None:
         return http.HttpResponseBadRequest('Missing query parameter q.')
@@ -57,8 +66,14 @@ def search(request):
         'items': items
         }
 
-    return http.HttpResponse(json.dumps(result, indent=4),
-                             content_type='application/json')
+    return json_response(result)
+
+
+def employee(request, id):
+    """
+    Handles querying of a single employee.
+    """
+    return json_response(emit_search_result(models.Employee.objects.get(pk=id)))
 
 
 def index(request):
