@@ -1,4 +1,4 @@
-var SearchController = function($scope, $http) {
+var SearchController = function($scope, $routeParams, $location, $http) {
   $scope.doQuery = function() {
     var config = {
       params: {q: $scope.query},
@@ -6,7 +6,12 @@ var SearchController = function($scope, $http) {
     $http.get("search", config).success(function(data) {
 	$scope.employees = data.items;
       });
+
   };
+  if ($routeParams.query) {
+    $scope.query = $routeParams.query;
+    $scope.doQuery();
+  }
 };
 
 var EmployeeController = function($scope, $routeParams, $http) {
@@ -15,5 +20,5 @@ var EmployeeController = function($scope, $routeParams, $http) {
     });
 };
 
-SearchController.$inject = ["$scope", "$http"];
+SearchController.$inject = ["$scope", "$routeParams", "$location", "$http"];
 EmployeeController.$inject = ["$scope", "$routeParams", "$http"];
