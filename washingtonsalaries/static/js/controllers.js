@@ -1,15 +1,16 @@
 var SearchController = function($scope, $routeParams, $location, $http) {
   $scope.doQuery = function() {
+    $location.search('q', $scope.query);
     var config = {
       params: {q: $scope.query},
     };
     $http.get("search", config).success(function(data) {
 	$scope.employees = data.items;
       });
-
   };
-  if ($routeParams.query) {
-    $scope.query = $routeParams.query;
+
+  if ($routeParams.q) {
+    $scope.query = $routeParams.q;
     $scope.doQuery();
   }
 };
