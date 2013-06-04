@@ -49,7 +49,8 @@ def search(request):
     if query is None:
         return http.HttpResponseBadRequest('Missing query parameter q.')
 
-    all_matches = models.Employee.objects.filter(name__search=query)
+    all_matches = models.Employee.objects.filter(name__search=query).order_by(
+        '-annualsalary__salary')
     pager = paginator.Paginator(all_matches, MAX_RESULTS_PER_PAGE)
 
     try:
