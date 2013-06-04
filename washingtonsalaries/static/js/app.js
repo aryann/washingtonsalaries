@@ -10,4 +10,3 @@ angular.module("washingtonsalaries", ["washingtonsalariesFilters"])
                  controller: EmployeeController})
           .otherwise({redirectTo: "/search"});
 }]);
-

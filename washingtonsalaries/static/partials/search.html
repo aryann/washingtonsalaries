@@ -13,6 +13,14 @@
                        '1': 'record',
                        'other': 'records'}">
   </ng-pluralize>.
+
+  <a href=""
+     ng-click="doQuery(page - 1)"
+     ng-hide="page <= 1">&larr; Prev</a>
+  <a href=""
+     ng-click="doQuery(page + 1)"
+     ng-hide="page >= result.total_pages">Next &rarr;</a>
 </article>
 
 <div ng-include src="'/static/partials/employees.html'"></div>
+
