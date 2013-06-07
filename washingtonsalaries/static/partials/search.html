@@ -2,25 +2,37 @@
   <input type="text"
          ng-model="query"
          ng-change="doQuery()"
-         placeholder="Search"
+         placeholder="Enter a name"
          autofocus />
 </div>
 
-<article ng-show="result">
-  Found <strong>{{result.total_results | number}}</strong>
-  <ng-pluralize count="result.total_results"
-                when="{'0': 'records',
-                       '1': 'record',
-                       'other': 'records'}">
-  </ng-pluralize>.
+<div id="info" ng-hide="query">
+  <p>Hi</p>
+</div>
 
-  <a href=""
-     ng-click="doQuery(page - 1)"
-     ng-hide="page <= 1">&larr; Prev</a>
-  <a href=""
-     ng-click="doQuery(page + 1)"
-     ng-hide="page >= result.total_pages">Next &rarr;</a>
-</article>
+<div id="info" ng-show="result && query">
+  <div id="numresults">
+    <p>
+      Found <strong>{{result.total_results | number}}</strong>
+      <ng-pluralize count="result.total_results"
+                    when="{'0': 'records',
+                           '1': 'record',
+                           'other': 'records'}">
+      </ng-pluralize>.
+    </p>
+  </div>
+
+  <div id="pagebuttons">
+    <p>
+      <a href=""
+         ng-click="doQuery(page - 1)"
+         ng-hide="page <= 1">&larr; Prev</a>
+      <a href=""
+         ng-click="doQuery(page + 1)"
+         ng-hide="page >= result.total_pages">Next &rarr;</a>
+    </p>
+  </div>
+</div>
 
 <div ng-include src="'/static/partials/employees.html'"></div>
 
