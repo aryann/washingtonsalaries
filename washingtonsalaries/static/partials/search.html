@@ -1,13 +1,5 @@
-<div id="searchbox">
-  <input type="text"
-         ng-model="query"
-         ng-change="doQuery()"
-         placeholder="Enter a name"
-         autofocus />
-</div>
-
 <div id="info" ng-hide="query">
-  <p>Hi</p>
+  <p>Search Washington State employees' salaries.</p>
 </div>
 
 <div id="info" ng-show="result && query">
@@ -32,6 +24,14 @@
          ng-hide="page >= result.total_pages">Next &rarr;</a>
     </p>
   </div>
+</div>
+
+<div id="searchbox">
+  <input type="text"
+         ng-model="query"
+         ng-change="doQuery()"
+         placeholder="Enter a name"
+         autofocus />
 </div>
 
 <div ng-include src="'/static/partials/employees.html'"></div>
