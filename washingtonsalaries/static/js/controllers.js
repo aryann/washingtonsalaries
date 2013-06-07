@@ -2,7 +2,9 @@ var SearchController = function($scope, $routeParams, $location, $http) {
   $scope.doQuery = function(page) {
     $scope.page = parseInt(page) || 1;
     $location.search("q", $scope.query);
-    $location.search("page", page);
+    if (page) {
+      $location.search("page", page);
+    }
     var config = {
       params: {
         q: $scope.query,
@@ -13,6 +15,7 @@ var SearchController = function($scope, $routeParams, $location, $http) {
 	$scope.result = result;
       });
   };
+
   if ($routeParams.q) {
     $scope.query = $routeParams.q;
     $scope.doQuery($routeParams.page);
