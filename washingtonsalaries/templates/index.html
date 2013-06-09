@@ -11,16 +11,21 @@
 
       #container {
         margin: 0 auto;
+        width: 600px;
+        padding: 10px;
       }
 
-      h1 {
+      #container > h1 {
+        margin-left: 10px;
+      }
+
+      article h1 {
         margin: 5px 0;
       }
 
       #info, article {
         padding: 10px;
         margin: 10px auto;
-        width: 400px;
       }
 
       p {
@@ -45,7 +50,7 @@
       }
 
       #searchbox {
-        width: 420px;
+        width: 620px;
         padding: 0;
         margin: 15px auto;
       }
@@ -53,7 +58,7 @@
       #searchbox input {
         font-size: 1.5em;
         padding: 10px;
-        width: 394px;
+        width: 580px;
       }
 
       .error {
@@ -100,6 +105,14 @@
   </head>
 
   <body>
-    <div ng-view></div>
+    <div id="container">
+      <h1>
+        <a href="/washingtonsalaries">
+          Washington State Employees' Salary Database
+        </a>
+      </h1>
+
+      <div ng-view></div>
+    </div>
   </body>
 </html>

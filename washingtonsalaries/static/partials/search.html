@@ -1,5 +1,8 @@
-<div id="info" ng-hide="query">
-  <p>Search Washington State employees' salaries.</p>
+<div id="searchbox">
+  <input type="text"
+         ng-model="query"
+         placeholder="Enter a name"
+         autofocus />
 </div>
 
 <div id="info" ng-show="result && query">
@@ -24,13 +27,6 @@
          ng-hide="page >= result.total_pages">Next &rarr;</a>
     </p>
   </div>
-</div>
-
-<div id="searchbox">
-  <input type="text"
-         ng-model="query"
-         placeholder="Enter a name"
-         autofocus />
 </div>
 
 <div ng-include src="'/static/partials/employees.html'"></div>
