@@ -10,7 +10,7 @@ var SearchController = function($http, $location, $routeParams, $scope,
     };
     $http.get("search", config)
       .success(function(result) {
-	  $scope.result = result;
+          $scope.result = result;
           $scope.error = false;
       })
       .error(function() {
@@ -22,7 +22,7 @@ var SearchController = function($http, $location, $routeParams, $scope,
   var timer = null;
 
   $scope.$watch("page", function(newVal, oldVal) {
-      if (newVal == oldVal) {
+      if (newVal === oldVal) {
         return;
       }
       if (timer) {
