@@ -1,14 +1,9 @@
-var SearchController = function($scope, $routeParams, $location, $http) {
-  $scope.doQuery = function(page) {
-    $scope.page = parseInt(page) || 1;
-    $location.search("q", $scope.query);
-    if (page) {
-      $location.search("page", page);
-    }
+var SearchController = function($scope, $routeParams, $location, $http, $timeout) {
+  var doQuery = function() {
     var config = {
       params: {
         q: $scope.query,
-        page: page,
+        page: $scope.page,
       },
     };
     $http.get("search", config).success(function(result) {
@@ -16,9 +11,44 @@ var SearchController = function($scope, $routeParams, $location, $http) {
       });
   };
 
+  var timer = null;
+
+  $scope.$watch("page", function(newVal, oldVal) {
+      if (newVal == oldVal) {
+        return;
+      }
+      if (timer) {
+        $timeout.cancel(timer);
+      }
+      $location.search("page", $scope.page === 1 ? null : $scope.page);
+      doQuery();
+  });
+
+  $scope.$watch("query", function(newVal, oldVal) {
+      if (newVal === oldVal) {
+        return;
+      }
+      if (timer) {
+        $timeout.cancel(timer);
+      }
+      timer = $timeout(function() {
+          $scope.page = 1;
+          $location.search("page", null);
+          $location.search("q", $scope.query);
+          doQuery();
+      }, 200);
+  });
+
+
+  if ($routeParams.page) {
+    $scope.page = parseInt($routeParams.page);
+  } else {
+    $scope.page = 1;
+  }
+
   if ($routeParams.q) {
     $scope.query = $routeParams.q;
-    $scope.doQuery($routeParams.page);
+    doQuery();
   }
 };
 
@@ -28,5 +58,5 @@ var EmployeeController = function($scope, $routeParams, $http) {
     });
 };
 
-SearchController.$inject = ["$scope", "$routeParams", "$location", "$http"];
+SearchController.$inject = ["$scope", "$routeParams", "$location", "$http", "$timeout"];
 EmployeeController.$inject = ["$scope", "$routeParams", "$http"];
