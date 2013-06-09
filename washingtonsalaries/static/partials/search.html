@@ -10,9 +10,7 @@
     <p>
       Found <strong>{{result.total_results | number}}</strong>
       <ng-pluralize count="result.total_results"
-                    when="{'0': 'records',
-                           '1': 'record',
-                           'other': 'records'}">
+                    when="{'1': 'record', 'other': 'records'}">
       </ng-pluralize>.
     </p>
   </div>
