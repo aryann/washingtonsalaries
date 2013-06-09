@@ -8,9 +8,15 @@ var SearchController = function($http, $location, $routeParams, $scope,
       },
       cache: true,
     };
-    $http.get("search", config).success(function(result) {
-	$scope.result = result;
-    });
+    $http.get("search", config)
+      .success(function(result) {
+	  $scope.result = result;
+          $scope.error = false;
+      })
+      .error(function() {
+          $scope.result = null;
+          $scope.error = true;
+      });
   };
 
   var timer = null;
@@ -49,8 +55,14 @@ var SearchController = function($http, $location, $routeParams, $scope,
 };
 
 var EmployeeController = function($http, $routeParams, $scope) {
-  $http.get("employees/" + $routeParams.employeeId).success(function(employeeData) {
-      $scope.result = {items: [employeeData]};
+  $http.get("employees/" + $routeParams.employeeId)
+    .success(function(employeeData) {
+        $scope.result = {items: [employeeData]};
+        $scope.error = false;
+    })
+    .error(function() {
+        $scope.result = null;
+        $scope.error = true;
     });
 };
 
