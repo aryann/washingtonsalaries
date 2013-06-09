@@ -6,10 +6,11 @@ var SearchController = function($http, $location, $routeParams, $scope,
         q: $scope.query,
         page: $scope.page,
       },
+      cache: true,
     };
     $http.get("search", config).success(function(result) {
 	$scope.result = result;
-      });
+    });
   };
 
   var timer = null;
@@ -40,13 +41,7 @@ var SearchController = function($http, $location, $routeParams, $scope,
       }, 200);
   });
 
-
-  if ($routeParams.page) {
-    $scope.page = parseInt($routeParams.page);
-  } else {
-    $scope.page = 1;
-  }
-
+  $scope.page = parseInt($routeParams.page) || 1;
   if ($routeParams.q) {
     $scope.query = $routeParams.q;
     doQuery();
