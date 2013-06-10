@@ -16,9 +16,9 @@ import logging
 import sys
 import urllib2
 
-BATCH_SIZE = 100
+BATCH_SIZE = 500
 COLS = ['agency', 'name', 'title', '2010_salary', '2011_salary', '2012_salary']
-SOLR_URL = 'http://localhost:8983/solr/update/'
+SOLR_URL = 'http://localhost:8983/solr/update?commit=true'
 
 
 def post_to_solr(buffer):
@@ -70,10 +70,11 @@ if __name__ == '__main__':
             if len(buffer) >= BATCH_SIZE:
                 post_to_solr(buffer)
                 buffer = []
+                logging.info('Records added: %s', line)
 
             if lines_to_process is not None and line >= lines_to_process:
                 break
 
-    if buffer:
-        post_to_solr(buffer)
-
+        if buffer:
+            post_to_solr(buffer)
+            logging.info('Records added: %s', line)
