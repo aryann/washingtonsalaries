@@ -1,20 +1,27 @@
+var solr = "http://localhost:8983/solr/washingtonsalaries/select";
+
 var SearchController = function($http, $location, $routeParams, $scope,
                                 $timeout) {
+  $scope.years = [2010, 2011, 2012];
+  $scope.resultsPerPage = 25;
+
   var doQuery = function() {
     var config = {
       params: {
         q: $scope.query,
-        page: $scope.page,
+        start: ($scope.page - 1) * $scope.resultsPerPage,
+        rows: $scope.resultsPerPage,
+        wt: "json",
       },
       cache: true,
     };
-    $http.get("search", config)
-      .success(function(result) {
-          $scope.result = result;
+    $http.get(solr, config)
+      .success(function(data) {
+          $scope.response = data.response;
           $scope.error = false;
       })
       .error(function() {
-          $scope.result = null;
+          $scope.response = null;
           $scope.error = true;
       });
   };
@@ -55,13 +62,22 @@ var SearchController = function($http, $location, $routeParams, $scope,
 };
 
 var EmployeeController = function($http, $routeParams, $scope) {
-  $http.get("employees/" + $routeParams.employeeId)
-    .success(function(employeeData) {
-        $scope.result = {items: [employeeData]};
+  $scope.years = [2010, 2011, 2012];
+
+  var config = {
+    params: {
+      q: "id:" + $routeParams.employeeId,
+      wt: "json",
+    },
+    cache: true,
+  };
+  $http.get(solr, config)
+    .success(function(data) {
+        $scope.response = data.response;
         $scope.error = false;
     })
     .error(function() {
-        $scope.result = null;
+        $scope.response = null;
         $scope.error = true;
     });
 };

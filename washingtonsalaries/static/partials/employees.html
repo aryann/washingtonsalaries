@@ -2,7 +2,7 @@
   Oops. It looks like your request couldn't be completed.
 </article>
 
-<article ng-repeat="employee in result.items">
+<article ng-repeat="employee in response.docs">
   <h1>
     <a href="#/employees/{{employee.id}}">{{employee.name | uppercase}}</a>
   </h1>
@@ -14,15 +14,15 @@
     </tr>
     <tr>
       <th>Agency</th>
-      <td>{{employee.agency.name | uppercase}}</td>
+      <td>{{employee.agency | uppercase}}</td>
     </tr>
     <tr>
       <th>Salary</th>
       <td class="salaries">
         <table>
-          <tr ng-repeat="point in employee.earnings">
-            <th>{{point.year}}</th>
-            <td>{{point.amount | salary}}</td>
+          <tr ng-repeat="year in years">
+            <th>{{year}}</th>
+            <td>{{employee[year + "_salary"] | salary}}</td>
           </tr>
         </table>
       </td>
