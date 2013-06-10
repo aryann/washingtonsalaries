@@ -7,13 +7,13 @@
    <field name="title" type="text_general" indexed="true" stored="true" />
    <field name="agency" type="text_general" indexed="true" stored="true" />
 
-   <dynamicField name="*_salary"  type="int" indexed="true" stored="true"/>
+   <dynamicField name="*_salary" type="int" indexed="true" stored="true" />
 
    <field name="_version_" type="long" indexed="true" stored="true" />
 
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
-   <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+   <field name="text" type="text_general" indexed="true" stored="false" multiValued="true" />
  </fields>
 
  <uniqueKey>id</uniqueKey>
@@ -32,12 +32,12 @@
 
    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
      <analyzer type="index">
-       <tokenizer class="solr.StandardTokenizerFactory"/>
-       <filter class="solr.LowerCaseFilterFactory"/>
+       <tokenizer class="solr.StandardTokenizerFactory" />
+       <filter class="solr.LowerCaseFilterFactory" />
      </analyzer>
      <analyzer type="query">
-       <tokenizer class="solr.StandardTokenizerFactory"/>
-       <filter class="solr.LowerCaseFilterFactory"/>
+       <tokenizer class="solr.StandardTokenizerFactory" />
+       <filter class="solr.LowerCaseFilterFactory" />
      </analyzer>
    </fieldType>
  </types>
