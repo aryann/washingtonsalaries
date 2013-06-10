@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="washingtonsalaries" version="1.5">
+ <fields>
+   <field name="id" type="int" indexed="true" stored="true" required="true" multiValued="false" />
+   <field name="name" type="text_general" indexed="true" stored="true" />
+   <field name="title" type="text_general" indexed="true" stored="true" />
+   <field name="agency" type="text_general" indexed="true" stored="true" />
+
+   <dynamicField name="*_salary"  type="int" indexed="true" stored="true"/>
+
+   <field name="_version_" type="long" indexed="true" stored="true" />
+
+   <!-- catchall field, containing all other searchable text fields (implemented
+        via copyField further on in this schema  -->
+   <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+ </fields>
+
+ <uniqueKey>id</uniqueKey>
+
+ <copyField source="name" dest="text" />
+ <copyField source="title" dest="text" />
+ <copyField source="agency" dest="text" />
+
+ <types>
+   <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+   <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" />
+   <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0" />
+   <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0" />
+   <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0" />
+   <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0" />
+
+   <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+     <analyzer type="index">
+       <tokenizer class="solr.StandardTokenizerFactory"/>
+       <filter class="solr.LowerCaseFilterFactory"/>
+     </analyzer>
+     <analyzer type="query">
+       <tokenizer class="solr.StandardTokenizerFactory"/>
+       <filter class="solr.LowerCaseFilterFactory"/>
+     </analyzer>
+   </fieldType>
+ </types>
+</schema>

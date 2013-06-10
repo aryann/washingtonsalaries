@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<solr persistent="true">
+  <logging enabled="true">
+    <watcher size="50" threshold="WARN" />
+  </logging>
+
+  <cores adminPath="/admin/cores"
+         defaultCoreName="washingtonsalaries"
+         host="${host:}"
+         hostPort="${jetty.port:8983}"
+         hostContext="${hostContext:solr}"
+         zkClientTimeout="${zkClientTimeout:15000}">
+    <core name="washingtonsalaries" instanceDir="washingtonsalaries" />
+  </cores>
+</solr>
