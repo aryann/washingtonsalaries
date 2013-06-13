@@ -1,4 +1,4 @@
-var solr = "http://localhost:8983/solr/washingtonsalaries/select";
+var solr = "http://localhost:8080/solr/washingtonsalaries/select";
 
 var SearchController = function($http, $location, $routeParams, $scope,
                                 $timeout) {
