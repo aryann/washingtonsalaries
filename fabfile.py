@@ -34,8 +34,8 @@ def prep_jetty_files():
     local('cp -r {root}/solr {jetty_home}'.format(**env))
 
     # Copies the Solr dependencies into Jetty.
-    local('cp {root}/lib/solr*/solr*.war {jetty_home}/webapps/solr.war'.format(
-            **env))
+    local('unzip -d {jetty_home}/webapps/solr {root}/lib/solr*/solr*.war'
+          .format(**env))
     local('cp {root}/lib/solr*/solrj-lib/* {jetty_home}/lib/ext'.format(**env))
 
 
