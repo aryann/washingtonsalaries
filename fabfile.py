@@ -28,8 +28,9 @@ def prep_jetty():
     local('cp -r {root}/solr {jetty_dir}'.format(**env))
 
     # Copies the Solr dependencies into Jetty.
-    local('cp lib/solr*/solr*.war {jetty_dir}/webapps/solr.war'.format(**env))
-    local('cp lib/solr*/solrj-lib/* {jetty_dir}/lib/ext'.format(**env))
+    local('cp {root}/lib/solr*/solr*.war {jetty_dir}/webapps/solr.war'.format(
+            **env))
+    local('cp {root}/lib/solr*/solrj-lib/* {jetty_dir}/lib/ext'.format(**env))
 
 
 def populate_solr(port=8080, debug=False):
