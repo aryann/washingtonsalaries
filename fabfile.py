@@ -9,7 +9,8 @@ import tempfile
 
 env.root = os.path.dirname(env.real_fabfile)
 
-def prep_server():
+
+def prep_jetty():
     env.temp_dir = tempfile.mkdtemp()
     for dep in ['jetty', 'solr']:
         local('unzip {root}/dist/{dep}* -d {temp_dir}'.format(dep=dep, **env))
@@ -30,11 +31,26 @@ def prep_server():
     local('mv {solr_dir}/dist/solr*.war {jetty_dir}/webapps/solr.war'.format(
             **env))
 
-    print env
 
-def start(jetty_home):
+def populate_solr(port=8080):
+    local('{root}/data/add_to_solr {root}/data/data.csv {server_port}'.format(
+            server_port=port, **env))
+
+
+def start_jetty(jetty_home=None):
+    if jetty_home is None and 'temp_dir' in env:
+        jetty_home = os.path.join(env.temp_dir, 'jetty')
+    else:
+        abort('Could not find Jetty home.')
+
     local('{jetty_home}/bin/jetty.sh stop'.format(jetty_home=jetty_home))
     local("""
         JAVA_OPTIONS="-Dsolr.solr.home={jetty_home}/solr/home $JAVA_OPTIONS" \
         {jetty_home}/bin/jetty.sh start
         """.format(jetty_home=jetty_home))
+
+
+def full_deploy():
+    prep_jetty()
+    start_jetty()
+    populate_solr()
