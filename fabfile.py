@@ -39,11 +39,11 @@ def prep_jetty_files():
     local('cp {root}/lib/solr*/solrj-lib/* {jetty_home}/lib/ext'.format(**env))
 
 
-def populate_solr():
+def populate_solr(debug):
     local("""
         {root}/data/add_to_solr {root}/data/data.csv {local_server_port} \
                                                      {lines_to_process}
-        """.format(lines_to_process=100 if env.debug else '', **env))
+        """.format(lines_to_process=100 if debug else '', **env))
 
 
 def start_jetty(run_fn):
@@ -76,20 +76,23 @@ def install_dependencies():
         sudo('apt-get install {0} --assume-yes'.format(dep))
 
 
-def prep_deployment(debug=None):
+def prep_deployment(debug=False, keep_jetty_running=True):
     env.temp_dir = tempfile.mkdtemp()
     env.jetty_home = os.path.join(env.temp_dir, 'jetty')
-    env.debug = debug if debug is not None else env.debug
     env.local_server_port = 8080
 
     prep_jetty_files()
     stop_jetty(local)
     start_jetty(local)
-    populate_solr()
-    stop_jetty(local)
+    populate_solr(debug)
+    if not keep_jetty_running:
+        stop_jetty(local)
     with lcd(env.temp_dir):
         local('tar zcvf deployment.tar.gz jetty')
     print 'Deployment files available at:', env.temp_dir
+    if keep_jetty_running:
+        print 'Jetty running at: http://localhost:{0}'.format(
+            env.local_server_port)
 
 
 def deploy_to_host(temp_dir=None):
@@ -105,10 +108,10 @@ def deploy_to_host(temp_dir=None):
 
 
 def full_deploy(debug=False):
-    prep_deployment(debug)
+    prep_deployment(debug=debug, keep_jetty_running=False)
     deploy_to_host()
 
-    if not env.debug:
+    if not debug:
         local('rm -rf {temp_dir}'.format(**env))
     else:
         print 'Deployment files available at:', env.temp_dir
