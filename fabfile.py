@@ -48,10 +48,12 @@ def start_jetty(jetty_home=None):
     else:
         abort('Could not find Jetty home.')
 
-    local('{jetty_home}/bin/jetty.sh stop'.format(jetty_home=jetty_home))
+    local('JETTY_RUN=/tmp {jetty_home}/bin/jetty.sh -d stop'.format(
+            jetty_home=jetty_home))
     local("""
         JAVA_OPTIONS="-Dsolr.solr.home={jetty_home}/solr/home $JAVA_OPTIONS" \
-        {jetty_home}/bin/jetty.sh start
+        JETTY_RUN=/tmp \
+        {jetty_home}/bin/jetty.sh -d start
         """.format(jetty_home=jetty_home))
 
 
