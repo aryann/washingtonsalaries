@@ -49,13 +49,18 @@ def populate_solr(debug):
 def start_jetty(run_fn):
     run_fn("""
         JAVA_OPTIONS="-Dsolr.solr.home={jetty_home}/solr/home $JAVA_OPTIONS" \
+        JETTY_HOME={jetty_home} \
         JETTY_RUN=/tmp \
         {jetty_home}/bin/jetty.sh -d start
         """.format(**env))
 
 
 def stop_jetty(run_fn):
-    run_fn('JETTY_RUN=/tmp {jetty_home}/bin/jetty.sh -d stop'.format(**env))
+    run_fn("""
+        JETTY_HOME={jetty_home} \
+        JETTY_RUN=/tmp \
+        {jetty_home}/bin/jetty.sh -d stop
+        """.format(**env))
 
 
 def copy_files_to_host():
