@@ -46,6 +46,11 @@ def populate_solr(debug):
         """.format(lines_to_process=100 if debug else '', **env))
 
 
+def add_solr_security_constraints():
+    local('cp {root}/solr/web.xml {jetty_home}/webapps/solr/WEB-INF/web.xml'
+          .format(**env))
+
+
 def start_jetty(run_fn):
     run_fn("""
         JAVA_OPTIONS="-Dsolr.solr.home={jetty_home}/solr/home $JAVA_OPTIONS" \
@@ -90,8 +95,15 @@ def prep_deployment(debug=False, keep_jetty_running=True):
     stop_jetty(local)
     start_jetty(local)
     populate_solr(debug)
-    if not keep_jetty_running:
-        stop_jetty(local)
+    add_solr_security_constraints()
+    stop_jetty(local)
+
+    # Starts Jetty again if the client wants Jetty to be running. We
+    # have to do this stop and start dance because the security
+    # constraints added will not take effect until after a restart.
+    if keep_jetty_running:
+        start_jetty(local)
+
     with lcd(env.temp_dir):
         local('tar zcf deployment.tar.gz jetty')
     print 'Deployment files available at:', env.temp_dir

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5"
+         metadata-complete="true">
+
+  <!-- Revoke access to all paths except /washingtonsalaries/select
+       for GET requests only. -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>All</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint />
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Select</web-resource-name>
+      <url-pattern>/washingtonsalaries/select</url-pattern>
+      <http-method-omission>GET</http-method-omission>
+    </web-resource-collection>
+    <auth-constraint />
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- Just to be extra careful, only dispatch requests matching
+       /washingtonsalaries/select. -->
+  <filter>
+    <filter-name>SolrRequestFilter</filter-name>
+    <filter-class>org.apache.solr.servlet.SolrDispatchFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SolrRequestFilter</filter-name>
+    <url-pattern>/washingtonsalaries/select</url-pattern>
+  </filter-mapping>
+
+</web-app>
