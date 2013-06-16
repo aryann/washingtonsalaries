@@ -9,7 +9,6 @@
        for GET requests only. -->
   <security-constraint>
     <web-resource-collection>
-      <web-resource-name>All</web-resource-name>
       <url-pattern>/*</url-pattern>
     </web-resource-collection>
     <auth-constraint />
@@ -20,7 +19,6 @@
 
   <security-constraint>
     <web-resource-collection>
-      <web-resource-name>Select</web-resource-name>
       <url-pattern>/washingtonsalaries/select</url-pattern>
       <http-method-omission>GET</http-method-omission>
     </web-resource-collection>
