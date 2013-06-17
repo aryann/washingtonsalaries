@@ -1,6 +1,6 @@
 <div ng-include src="'partials/searchbox.html'"></div>
 
-<div id="info" ng-show="queryService.getQuery()">
+<div id="info" ng-show="queryService.getQuery() && response">
   <div id="numresults" ng-switch on="response.numFound" >
     <p ng-switch-when="0">No records found.</p>
     <p ng-switch-when="1">Found <strong>1</strong> record.</p>
