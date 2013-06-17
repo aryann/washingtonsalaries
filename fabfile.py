@@ -25,6 +25,7 @@ def prep_jetty_files():
 
     # Disables the Jetty demos.
     local('rm {jetty_home}/start.d/900-demo.ini'.format(**env))
+    local('rm -rf {jetty_home}/webapps.demo'.format(**env))
 
     # Copies the static files to Jetty's webapps/.
     local('rm -rf {jetty_home}/webapps/ROOT'.format(**env))
