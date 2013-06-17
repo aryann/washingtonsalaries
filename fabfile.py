@@ -135,7 +135,7 @@ def deploy_to_host(temp_dir=None):
 
 
 def full_deploy(debug=False):
-    prep_deployment(debug=debug, keep_jetty_running=False)
+    prep_deployment(debug=debug, dev_mode=False)
     deploy_to_host()
 
     if not debug:
