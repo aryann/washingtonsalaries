@@ -19,7 +19,7 @@ __all__ = ['prep_deployment', 'deploy_to_host', 'full_deploy']
 env.root = os.path.dirname(env.real_fabfile)
 
 
-def prep_jetty_files():
+def prep_jetty_files(dev_mode=False):
     local('unzip -q -d {temp_dir} {root}/lib/jetty*'.format(**env))
     local('mv {temp_dir}/jetty* {temp_dir}/jetty'.format(**env))
 
@@ -29,7 +29,15 @@ def prep_jetty_files():
 
     # Copies the static files to Jetty's webapps/.
     local('rm -rf {jetty_home}/webapps/ROOT'.format(**env))
-    local('cp -r {root}/client {jetty_home}/webapps/ROOT'.format(**env))
+    if dev_mode:
+        local('mkdir {jetty_home}/webapps/ROOT'.format(**env))
+        client_files = local(
+            'ls {root}/client'.format(**env), capture=True).split()
+        for file in client_files:
+            local('ln -s {root}/client/{file} {jetty_home}/webapps/ROOT/{file}'
+                  .format(file=file, **env))
+    else:
+        local('cp -r {root}/client {jetty_home}/webapps/ROOT'.format(**env))
 
     # Copies the Solr home dir to the Jetty dir.
     local('cp -r {root}/solr {jetty_home}'.format(**env))
@@ -87,12 +95,12 @@ def install_dependencies():
         sudo('apt-get install {0} --assume-yes'.format(dep))
 
 
-def prep_deployment(debug=False, keep_jetty_running=True):
+def prep_deployment(debug=False, dev_mode=False):
     env.temp_dir = tempfile.mkdtemp()
     env.jetty_home = os.path.join(env.temp_dir, 'jetty')
     env.local_server_port = 8080
 
-    prep_jetty_files()
+    prep_jetty_files(dev_mode=dev_mode)
     stop_jetty(local)
     start_jetty(local)
     populate_solr(debug)
@@ -102,15 +110,16 @@ def prep_deployment(debug=False, keep_jetty_running=True):
     # Starts Jetty again if the client wants Jetty to be running. We
     # have to do this stop and start dance because the security
     # constraints added will not take effect until after a restart.
-    if keep_jetty_running:
+    if dev_mode:
         start_jetty(local)
-
-    with lcd(env.temp_dir):
-        local('tar zcf deployment.tar.gz jetty')
-    print 'Deployment files available at:', env.temp_dir
-    if keep_jetty_running:
         print 'Jetty running at: http://localhost:{0}'.format(
             env.local_server_port)
+    else:
+        with lcd(env.temp_dir):
+            local('tar zcf deployment.tar.gz jetty')
+
+    print 'Deployment files available at:', env.temp_dir
+
 
 
 def deploy_to_host(temp_dir=None):
