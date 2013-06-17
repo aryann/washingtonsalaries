@@ -19,6 +19,9 @@ angular.module("washingtonsalaries", ["washingtonsalariesFilters"])
                 });
       }])
 
+  .value("solrPath", "/solr/washingtonsalaries/select")
+  .value("years", [2010, 2011, 2012])
+
   .service("queryService", function() {
       var query;
       var page = 1;
@@ -50,4 +53,3 @@ angular.module("washingtonsalaries", ["washingtonsalariesFilters"])
         }
       };
     });
-

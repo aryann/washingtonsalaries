@@ -1,5 +1,3 @@
-var solr = "/solr/washingtonsalaries/select";
-
 var HomeController = function($location, $scope, queryService) {
   $scope.queryService = queryService;
 
@@ -13,9 +11,9 @@ var HomeController = function($location, $scope, queryService) {
 };
 
 var SearchController = function($http, $location, $routeParams, $scope,
-                                $timeout, queryService) {
+                                $timeout, queryService, solrPath, years) {
 
-  $scope.years = [2010, 2011, 2012];
+  $scope.years = years;
   $scope.resultsPerPage = 25;
 
   var doQuery = function() {
@@ -28,7 +26,7 @@ var SearchController = function($http, $location, $routeParams, $scope,
       },
       cache: true,
     };
-    $http.get(solr, config)
+    $http.get(solrPath, config)
       .success(function(data) {
           $scope.response = data.response;
           $scope.error = false;
@@ -77,8 +75,9 @@ var SearchController = function($http, $location, $routeParams, $scope,
   $scope.query = queryService.getQuery();
 };
 
-var EmployeeController = function($http, $routeParams, $scope) {
-  $scope.years = [2010, 2011, 2012];
+var EmployeeController = function($http, $routeParams, $scope, solrPath,
+                                  years) {
+  $scope.years = years;
 
   var config = {
     params: {
@@ -87,7 +86,7 @@ var EmployeeController = function($http, $routeParams, $scope) {
     },
     cache: true,
   };
-  $http.get(solr, config)
+  $http.get(solrPath, config)
     .success(function(data) {
         $scope.response = data.response;
         $scope.error = false;
@@ -101,7 +100,8 @@ var EmployeeController = function($http, $routeParams, $scope) {
 HomeController.$inject =
   ["$location", "$scope", "queryService"];
 SearchController.$inject =
-  ["$http", "$location", "$routeParams", "$scope", "$timeout", "queryService"];
+  ["$http", "$location", "$routeParams", "$scope", "$timeout", "queryService",
+   "solrPath", "years"];
 EmployeeController.$inject =
-  ["$http", "$routeParams", "$scope"];
+  ["$http", "$routeParams", "$scope", "solrPath", "years"];
 
