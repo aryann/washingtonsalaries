@@ -10,17 +10,17 @@
       of <strong>{{response.numFound | number}}</strong>.</p>
   </div>
 
-  <div id="pagebuttons">
+  <div id="pagebuttons" ng-show="response.numFound > resultsPerPage">
     <p>
       <a href=""
          ng-click="queryService.decrementPage()"
-         ng-hide="queryService.getPage() <= 1">
+         ng-class="{disabledlink: queryService.getPage() <= 1}">
         &larr; Prev
       </a>
-
+      &middot;
       <a href=""
          ng-click="queryService.incrementPage()"
-         ng-hide="queryService.getPage() >= response.numFound / resultsPerPage">
+         ng-class="{disabledlink: queryService.getPage() >= response.numFound / resultsPerPage}">
         Next &rarr;
       </a>
     </p>
@@ -28,4 +28,3 @@
 </div>
 
 <div ng-include src="'partials/employees.html'"></div>
-

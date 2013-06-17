@@ -12,7 +12,6 @@ var HomeController = function($location, $scope, queryService) {
 
 var SearchController = function($http, $location, $routeParams, $scope,
                                 $timeout, queryService, solrPath, years) {
-
   $scope.years = years;
   $scope.resultsPerPage = 25;
 
