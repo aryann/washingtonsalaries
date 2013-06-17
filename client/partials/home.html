@@ -1,2 +1,25 @@
 <div ng-include src="'partials/searchbox.html'"></div>
 
+<h2>Example Queries</h2>
+
+<dl>
+  <dt>The state's 22nd governer</dt>
+  <dd>
+    <a href="#/search?q=Christine%20AND%20Gregoire">Christine AND Gregoire</a>
+  </dd>
+
+  <dt>Six figure earners in 2012</dt>
+  <dd>
+    <a href="#/search?q=2012_salary:%5B100000%20TO%20*%5D">2012_salary:[100000 TO *]</a>
+  </dd>
+
+  <dt>Employees of the University of Washington</dt>
+  <dd>
+      <a href="#/search?q=agency:%22university%20of%20washington%22">agency:"university of washington"</a>
+  </dd>
+
+  <dt>University of Washington six figure earners</dt>
+  <dd>
+      <a href="#/search?q=agency:%22university%20of%20washington%22%20AND%202012_salary:%5B100000%20TO%20*%5D">agency:"university of washington" AND 2012_salary:[100000 TO *]</a>
+  </dd>
+</dl>

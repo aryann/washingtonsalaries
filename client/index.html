@@ -14,7 +14,7 @@
         padding: 10px;
       }
 
-      #container > h1 {
+      #container > h1, h2, dl {
         margin-left: 10px;
       }
 
@@ -22,9 +22,13 @@
         margin: 5px 0;
       }
 
-      #info, article {
+      #info, article, h2 {
         padding: 10px;
         margin: 10px auto;
+      }
+
+      dt, dd {
+        margin-bottom: 10px;
       }
 
       p {
@@ -68,7 +72,7 @@
         text-align: left;
       }
 
-      th:after {
+      article th:after, dt:after {
         content: ":";
       }
 
