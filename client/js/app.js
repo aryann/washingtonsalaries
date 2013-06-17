@@ -8,5 +8,40 @@ angular.module("washingtonsalaries", ["washingtonsalariesFilters"])
           .when("/employees/:employeeId",
                 {templateUrl: "partials/employees.html",
                  controller: EmployeeController})
-          .otherwise({redirectTo: "/search"});
-}]);
+          .otherwise(
+                     {templateUrl: "partials/home.html",
+                      controller: HomeController});
+      }])
+
+  .service("queryService", function() {
+      var query;
+      var page = 1;
+
+      return {
+        getQuery: function() {
+          return query;
+        },
+
+        setQuery: function(value) {
+          console.log("query set");
+          query = value;
+        },
+
+        getPage: function() {
+          return page;
+        },
+
+        setPage: function(value) {
+          page = parseInt(value) || 1;
+        },
+
+        incrementPage: function() {
+          page++;
+        },
+
+        decrementPage: function() {
+          page--;
+        }
+      };
+    });
+

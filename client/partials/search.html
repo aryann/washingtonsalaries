@@ -1,28 +1,28 @@
-<div id="searchbox">
-  <input type="text"
-         ng-model="query"
-         placeholder="Enter a name"
-         autofocus />
-</div>
+<div ng-include src="'partials/searchbox.html'"></div>
 
-<div id="info" ng-show="response && query">
+<div id="info" ng-show="queryService.getQuery()">
   <div id="numresults" ng-switch on="response.numFound" >
     <p ng-switch-when="0">No records found.</p>
     <p ng-switch-when="1">Found <strong>1</strong> record.</p>
     <p ng-switch-default>
       Showing records
-      <strong>{{(page - 1) * resultsPerPage + 1}}</strong>-<strong>{{(page - 1) * resultsPerPage + response.docs.length}}</strong>
+      <strong>{{(queryService.getPage() - 1) * resultsPerPage + 1 | number}}</strong>-<strong>{{(queryService.getPage() - 1) * resultsPerPage + response.docs.length | number}}</strong>
       of <strong>{{response.numFound | number}}</strong>.</p>
   </div>
 
   <div id="pagebuttons">
     <p>
       <a href=""
-         ng-click="page = page - 1"
-         ng-hide="page <= 1">&larr; Prev</a>
+         ng-click="queryService.decrementPage()"
+         ng-hide="queryService.getPage() <= 1">
+        &larr; Prev
+      </a>
+
       <a href=""
-         ng-click="page = page + 1"
-         ng-hide="page >= response.numFound / resultsPerPage">Next &rarr;</a>
+         ng-click="queryService.incrementPage()"
+         ng-hide="queryService.getPage() >= response.numFound / resultsPerPage">
+        Next &rarr;
+      </a>
     </p>
   </div>
 </div>

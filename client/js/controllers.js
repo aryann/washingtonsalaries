@@ -1,15 +1,28 @@
 var solr = "/solr/washingtonsalaries/select";
 
+var HomeController = function($location, $scope, queryService) {
+  $scope.queryService = queryService;
+
+  $scope.$watch("queryService.getQuery()", function(newVal, oldVal) {
+      if (newVal === oldVal) {
+        return;
+      }
+      $location.path("/search");
+      $location.search("q", queryService.getQuery());
+    });
+};
+
 var SearchController = function($http, $location, $routeParams, $scope,
-                                $timeout) {
+                                $timeout, queryService) {
+
   $scope.years = [2010, 2011, 2012];
   $scope.resultsPerPage = 25;
 
   var doQuery = function() {
     var config = {
       params: {
-        q: $scope.query,
-        start: ($scope.page - 1) * $scope.resultsPerPage,
+        q: queryService.getQuery(),
+        start: (queryService.getPage() - 1) * $scope.resultsPerPage,
         rows: $scope.resultsPerPage,
         wt: "json",
       },
@@ -28,18 +41,18 @@ var SearchController = function($http, $location, $routeParams, $scope,
 
   var timer = null;
 
-  $scope.$watch("page", function(newVal, oldVal) {
+  $scope.$watch("queryService.getPage()", function(newVal, oldVal) {
       if (newVal === oldVal) {
         return;
       }
       if (timer) {
         $timeout.cancel(timer);
       }
-      $location.search("page", $scope.page === 1 ? null : $scope.page);
+      $location.search("page", newVal === 1 ? null : newVal);
       doQuery();
   });
 
-  $scope.$watch("query", function(newVal, oldVal) {
+  $scope.$watch("queryService.getQuery()", function(newVal, oldVal) {
       if (newVal === oldVal) {
         return;
       }
@@ -49,16 +62,19 @@ var SearchController = function($http, $location, $routeParams, $scope,
       timer = $timeout(function() {
           $scope.page = 1;
           $location.search("page", null);
-          $location.search("q", $scope.query);
+          $location.search("q", queryService.getQuery());
           doQuery();
       }, 200);
   });
 
-  $scope.page = parseInt($routeParams.page) || 1;
+  $scope.queryService = queryService;
+  queryService.setPage($routeParams.page);
   if ($routeParams.q) {
-    $scope.query = $routeParams.q;
+    queryService.setQuery($routeParams.q);
     doQuery();
   }
+
+  $scope.query = queryService.getQuery();
 };
 
 var EmployeeController = function($http, $routeParams, $scope) {
@@ -82,7 +98,10 @@ var EmployeeController = function($http, $routeParams, $scope) {
     });
 };
 
+HomeController.$inject =
+  ["$location", "$scope", "queryService"];
 SearchController.$inject =
-  ["$http", "$location", "$routeParams", "$scope", "$timeout"];
+  ["$http", "$location", "$routeParams", "$scope", "$timeout", "queryService"];
 EmployeeController.$inject =
   ["$http", "$routeParams", "$scope"];
+
