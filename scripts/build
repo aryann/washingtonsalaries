@@ -55,7 +55,7 @@ jetty() {
 jetty stop
 jetty start
 
-${ROOT}/data/add_to_solr ${ROOT}/data/data.csv \
+${SCRIPT_ROOT}/add_to_solr ${ROOT}/data/data.csv \
     8080 \
     $((($DEBUG)) && echo 100)
 
