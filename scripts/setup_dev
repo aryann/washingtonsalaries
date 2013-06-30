@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Sets up a "development" environment.
+
+set -e
+
+SCRIPT_ROOT=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+ROOT=$(dirname ${SCRIPT_ROOT})
+BUILD_DIR=${ROOT}/build
+
+if [ -d ${BUILD_DIR} ]; then
+    rm -rf ${BUILD_DIR}
+fi
+mkdir ${BUILD_DIR}
+
+(
+    cd ${BUILD_DIR}
+    unzip ${ROOT}/lib/jetty*
+    mv jetty* jetty
+    (
+        cd jetty
+        rm -rf \
+            start.d/900-demo.ini \
+            webapps.demo \
+            webapps/ROOT
+        cp -r ${ROOT}/client webapps/ROOT
+
+        # Copies the Solr dependencies into Jetty's directory.
+        cp -r ${ROOT}/solr .
+        unzip -d webapps/solr ${ROOT}/lib/solr*/solr*.war
+        cp ${ROOT}/lib/solr*/solrj-lib/* lib/ext
+    )
+)
+
+# jetty.sh does not propagate environment variables from stop to start
+# when doing a restart, so we have to invoke a stop and start on our
+# own.
+for ACTION in stop start; do
+    JAVA_OPTIONS="-Dsolr.solr.home=${BUILD_DIR}/jetty/solr/home ${JAVA_OPTIONS}" \
+        JETTY_HOME=${BUILD_DIR}/jetty \
+        JETTY_RUN=${JETTY_HOME} \
+        ${BUILD_DIR}/jetty/bin/jetty.sh -d ${ACTION}
+done
+
+${ROOT}/data/add_to_solr ${ROOT}/data/data.csv 8080 100
