@@ -4,7 +4,7 @@
 # service. The -d flag allows for local development. If -d is
 # ommitted, a deployment tarball is created in the build/ directory.
 #
-# Usage: setup_dev [-d]
+# Usage: build [-d]
 
 set -e
 
