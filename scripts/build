@@ -32,7 +32,17 @@ mkdir ${BUILD_DIR}
             start.d/900-demo.ini \
             webapps.demo \
             webapps/ROOT
-        cp -r ${ROOT}/client webapps/ROOT
+
+        # If in debug mode, make symlinks to the client dir to allow
+        # for faster development.
+        if (( ${DEBUG} )); then
+            mkdir webapps/ROOT
+            for FILE in $(ls ${ROOT}/client); do
+                ln -s ${ROOT}/client/${FILE} webapps/ROOT/${FILE}
+            done
+        else
+            cp -r ${ROOT}/client webapps/ROOT
+        fi
 
         # Copies the Solr dependencies into Jetty's directory.
         cp -r ${ROOT}/solr/home solr
