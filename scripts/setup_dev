@@ -26,20 +26,26 @@ mkdir ${BUILD_DIR}
         cp -r ${ROOT}/client webapps/ROOT
 
         # Copies the Solr dependencies into Jetty's directory.
-        cp -r ${ROOT}/solr .
+        cp -r ${ROOT}/solr/home solr
         unzip -d webapps/solr ${ROOT}/lib/solr*/solr*.war
         cp ${ROOT}/lib/solr*/solrj-lib/* lib/ext
     )
 )
 
-# jetty.sh does not propagate environment variables from stop to start
-# when doing a restart, so we have to invoke a stop and start on our
-# own.
-for ACTION in stop start; do
-    JAVA_OPTIONS="-Dsolr.solr.home=${BUILD_DIR}/jetty/solr/home ${JAVA_OPTIONS}" \
-        JETTY_HOME=${BUILD_DIR}/jetty \
-        JETTY_RUN=${JETTY_HOME} \
-        ${BUILD_DIR}/jetty/bin/jetty.sh -d ${ACTION}
-done
+restart_jetty() {
+    # jetty.sh does not propagate environment variables from stop to
+    # start when doing a restart, so we have to invoke a stop and
+    # start on our own.
+    for ACTION in stop start; do
+        JAVA_OPTIONS="-Dsolr.solr.home=${BUILD_DIR}/jetty/solr ${JAVA_OPTIONS}" \
+            JETTY_HOME=${BUILD_DIR}/jetty \
+            JETTY_RUN=/tmp \
+            ${BUILD_DIR}/jetty/bin/jetty.sh -d ${ACTION}
+    done
+}
 
+restart_jetty
 ${ROOT}/data/add_to_solr ${ROOT}/data/data.csv 8080 100
+
+cp ${ROOT}/solr/web.xml ${BUILD_DIR}/jetty/webapps/solr/WEB-INF/web.xml
+restart_jetty
