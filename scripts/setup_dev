@@ -1,8 +1,17 @@
 #!/bin/bash
 
-# Sets up a "development" environment.
+# Sets up the file structure necessary to run the washingtonsalaries
+# service. The -d flag allows for local development. If -d is
+# ommitted, a deployment tarball is created in the build/ directory.
+#
+# Usage: setup_dev [-d]
 
 set -e
+
+DEBUG=0
+if [ ! -z "${1}" ] && [ "${1}" == "-d" ]; then
+    DEBUG=1
+fi
 
 SCRIPT_ROOT=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 ROOT=$(dirname ${SCRIPT_ROOT})
@@ -32,20 +41,31 @@ mkdir ${BUILD_DIR}
     )
 )
 
-restart_jetty() {
-    # jetty.sh does not propagate environment variables from stop to
-    # start when doing a restart, so we have to invoke a stop and
-    # start on our own.
-    for ACTION in stop start; do
-        JAVA_OPTIONS="-Dsolr.solr.home=${BUILD_DIR}/jetty/solr ${JAVA_OPTIONS}" \
-            JETTY_HOME=${BUILD_DIR}/jetty \
-            JETTY_RUN=/tmp \
-            ${BUILD_DIR}/jetty/bin/jetty.sh -d ${ACTION}
-    done
+jetty() {
+    local action=${1}
+    JAVA_OPTIONS="-Dsolr.solr.home=${BUILD_DIR}/jetty/solr ${JAVA_OPTIONS}" \
+        JETTY_HOME=${BUILD_DIR}/jetty \
+        JETTY_RUN=/tmp \
+        ${BUILD_DIR}/jetty/bin/jetty.sh -d ${action}
 }
 
-restart_jetty
-${ROOT}/data/add_to_solr ${ROOT}/data/data.csv 8080 100
+# jetty.sh does not propagate environment variables from stop to start
+# when doing a restart, so we have to invoke a stop and start on our
+# own.
+jetty stop
+jetty start
 
+${ROOT}/data/add_to_solr ${ROOT}/data/data.csv \
+    8080 \
+    $((($DEBUG)) && echo 100)
+
+jetty stop
 cp ${ROOT}/solr/web.xml ${BUILD_DIR}/jetty/webapps/solr/WEB-INF/web.xml
-restart_jetty
+jetty start
+
+if (( ! ${DEBUG} )); then
+    (
+        cd ${BUILD_DIR}
+        tar zcvf deployment.tar.gz jetty
+    )
+fi
