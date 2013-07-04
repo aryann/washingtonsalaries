@@ -37,8 +37,8 @@ def create_config_file():
           JAVA_OPTIONS="-Dsolr.solr.home={jetty_home}/solr ${{JAVA_OPTIONS}}"
           NO_START=0
           JETTY_HOME={jetty_home}
-          JETTY_RUN=/var/run
-          JETTY_ARGS=jetty.port=80
+          JETTY_RUN={jetty_home}
+          JETTY_ARGS=jetty.port={jetty_port}
           """.format(**env)))
 
 
@@ -49,16 +49,26 @@ def deploy(deployment_tar=None):
 
     env.deployment_tar = deployment_tar
     env.jetty_home = '/opt/jetty'
+    env.jetty_port = 8181
+    env.jetty_user = 'jetty'
 
     install_dependencies()
+    sudo('useradd {jetty_user} -U'.format(**env))
 
     put(env.deployment_tar, '/tmp')
     with cd('/tmp'):
-        run('tar xzvf {0}'.format(os.path.basename(env.deployment_tar)))
-        run('mv jetty {jetty_home}'.format(**env))
+        sudo('tar xzvf {0}'.format(os.path.basename(env.deployment_tar)))
+        sudo('mv jetty {jetty_home}'.format(**env))
+    sudo('chown -R {jetty_user}:{jetty_user} {jetty_home}'.format(**env))
 
-    run('ln -s {jetty_home}/bin/jetty.sh /etc/init.d/jetty'.format(**env))
+    sudo('ln -s {jetty_home}/bin/jetty.sh /etc/init.d/jetty'.format(**env))
     create_config_file()
-    run('service jetty start')  # Starts Jetty.
-    run('update-rc.d jetty defaults')  # Ensures that Jetty is started
-                                       # on reboot.
+
+    sudo('service jetty start',
+         user=env.jetty_user, group=env.jetty_user)  # Starts Jetty.
+    sudo('update-rc.d jetty defaults')  # Ensures that Jetty is
+                                        # started on reboot.
+
+    sudo('/sbin/iptables --table nat --insert PREROUTING --protocol tcp '
+         '--destination-port 80 --jump REDIRECT --to-port {jetty_port}'
+         .format(**env))
