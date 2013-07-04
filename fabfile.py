@@ -43,6 +43,23 @@ def create_config_file():
           """.format(**env)))
 
 
+def setup_port_redirect(jetty_port):
+    sudo('iptables --table nat --insert PREROUTING --protocol tcp '
+         '--destination-port 80 --jump REDIRECT --to-port {0}'
+         .format(jetty_port))
+
+    # Ensures that the changes survive reboots.
+    sudo('iptables-save > /etc/firewall.conf')
+    restore_script = '/etc/network/if-up.d/iptables'
+    files.append(
+        filename=restore_script,
+        text=textwrap.dedent("""\
+            #!/bin/bash
+            iptables-restore < /etc/firewall.conf
+            """))
+    sudo('chmod +x {0}'.format(restore_script))
+
+
 def deploy(deployment_tar=None):
     if not deployment_tar:
         local(os.path.join(env.root, 'scripts', 'build'))
@@ -69,6 +86,4 @@ def deploy(deployment_tar=None):
     sudo('update-rc.d jetty defaults')  # Ensures that Jetty is
                                         # started on reboot.
 
-    sudo('/sbin/iptables --table nat --insert PREROUTING --protocol tcp '
-         '--destination-port 80 --jump REDIRECT --to-port {jetty_port}'
-         .format(**env))
+    setup_port_redirect(env.jetty_port)
