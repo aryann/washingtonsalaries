@@ -39,6 +39,7 @@ def create_config_file():
           JETTY_HOME={jetty_home}
           JETTY_RUN={jetty_home}
           JETTY_ARGS=jetty.port={jetty_port}
+          JETTY_USER={jetty_user}
           """.format(**env)))
 
 
@@ -64,8 +65,7 @@ def deploy(deployment_tar=None):
     sudo('ln -s {jetty_home}/bin/jetty.sh /etc/init.d/jetty'.format(**env))
     create_config_file()
 
-    sudo('service jetty start',
-         user=env.jetty_user, group=env.jetty_user)  # Starts Jetty.
+    sudo('service jetty start')  # Starts Jetty.
     sudo('update-rc.d jetty defaults')  # Ensures that Jetty is
                                         # started on reboot.
 
