@@ -25,6 +25,7 @@ def install_dependencies():
     sudo('apt-get update')
     dependencies = [
         'openjdk-7-jre',
+        'ufw',
         ]
     for dep in dependencies:
         sudo('apt-get install {0} --assume-yes'.format(dep))
@@ -60,6 +61,13 @@ def setup_port_redirect(jetty_port):
     sudo('chmod +x {0}'.format(restore_script))
 
 
+def add_firewall_rules():
+    sudo('ufw default deny')
+    sudo('ufw allow 22/tcp')
+    sudo('ufw allow 80/tcp')
+    sudo('yes | ufw enable')
+
+
 def deploy(deployment_tar=None):
     if not deployment_tar:
         local(os.path.join(env.root, 'scripts', 'build'))
@@ -86,4 +94,5 @@ def deploy(deployment_tar=None):
     sudo('update-rc.d jetty defaults')  # Ensures that Jetty is
                                         # started on reboot.
 
+    add_firewall_rules()
     setup_port_redirect(env.jetty_port)
