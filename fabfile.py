@@ -8,8 +8,6 @@ Example usage:
       -H <user>@<host>
 """
 import os
-import sys
-import tempfile
 import textwrap
 
 from fabric.api import *
@@ -19,13 +17,15 @@ from fabric.contrib import files
 __all__ = ['deploy']
 
 env.root = os.path.dirname(env.real_fabfile)
+env.jetty_home = '/opt/jetty'
+env.jetty_port = 80
+env.jetty_user = 'jetty'
 
 
 def install_dependencies():
     sudo('apt-get update')
     dependencies = [
         'openjdk-7-jre',
-        'ufw',
         ]
     for dep in dependencies:
         sudo('apt-get install {0} --assume-yes'.format(dep))
@@ -40,32 +40,31 @@ def create_config_file():
           JETTY_HOME={jetty_home}
           JETTY_RUN={jetty_home}
           JETTY_ARGS=jetty.port={jetty_port}
-          JETTY_USER={jetty_user}
           """.format(**env)))
 
 
-def setup_port_redirect(jetty_port):
-    sudo('iptables --table nat --insert PREROUTING --protocol tcp '
-         '--destination-port 80 --jump REDIRECT --to-port {0}'
-         .format(jetty_port))
+def enable_setuid():
+    """Configures Jetty's SetUID feature. This allows Jetty to run on port
+    80 as a non-root user.
+    """
+    with cd(env.jetty_home):
+        sudo('ln -s libsetuid-linux.so lib/setuid/libsetuid.so')
+        files.append(
+            filename='start.ini',
+            text=textwrap.dedent("""\
+                # ===========================================================
+                # setuid settings
+                # -----------------------------------------------------------
+                --exec
+                -Djava.library.path={jetty_home}/lib/setuid
 
-    # Ensures that the changes survive reboots.
-    sudo('iptables-save > /etc/firewall.conf')
-    restore_script = '/etc/network/if-up.d/iptables'
-    files.append(
-        filename=restore_script,
-        text=textwrap.dedent("""\
-            #!/bin/bash
-            iptables-restore < /etc/firewall.conf
-            """))
-    sudo('chmod +x {0}'.format(restore_script))
-
-
-def add_firewall_rules():
-    sudo('ufw default deny')
-    sudo('ufw allow 22/tcp')
-    sudo('ufw allow 80/tcp')
-    sudo('yes | ufw enable')
+                OPTIONS=setuid
+                jetty.startServerAsPrivileged=true
+                jetty.username={jetty_user}
+                jetty.groupname={jetty_user}
+                jetty.umask=002
+                etc/jetty-setuid.xml
+                """.format(**env)))
 
 
 def deploy(deployment_tar=None):
@@ -73,26 +72,21 @@ def deploy(deployment_tar=None):
         local(os.path.join(env.root, 'scripts', 'build'))
         deployment_tar = os.path.join(env.root, 'build', 'deployment.tar.gz')
 
-    env.deployment_tar = deployment_tar
-    env.jetty_home = '/opt/jetty'
-    env.jetty_port = 8181
-    env.jetty_user = 'jetty'
-
     install_dependencies()
-    sudo('useradd {jetty_user} -U'.format(**env))
 
-    put(env.deployment_tar, '/tmp')
+    put(deployment_tar, '/tmp')
     with cd('/tmp'):
-        sudo('tar xzvf {0}'.format(os.path.basename(env.deployment_tar)))
+        sudo('tar xzvf {0}'.format(os.path.basename(deployment_tar)))
         sudo('mv jetty {jetty_home}'.format(**env))
+
+    sudo('useradd {jetty_user} -U'.format(**env))
     sudo('chown -R {jetty_user}:{jetty_user} {jetty_home}'.format(**env))
 
     sudo('ln -s {jetty_home}/bin/jetty.sh /etc/init.d/jetty'.format(**env))
+
     create_config_file()
+    enable_setuid()
 
     sudo('service jetty start')  # Starts Jetty.
     sudo('update-rc.d jetty defaults')  # Ensures that Jetty is
                                         # started on reboot.
-
-    add_firewall_rules()
-    setup_port_redirect(env.jetty_port)
