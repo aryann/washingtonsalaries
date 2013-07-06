@@ -26,6 +26,7 @@ def install_dependencies():
     sudo('apt-get update')
     dependencies = [
         'openjdk-7-jre',
+        'ufw',
         ]
     for dep in dependencies:
         sudo('apt-get install {0} --assume-yes'.format(dep))
@@ -67,12 +68,20 @@ def enable_setuid():
                 """.format(**env)))
 
 
+def add_firewall_rules():
+    sudo('ufw default deny')
+    sudo('ufw limit ssh/tcp')
+    sudo('ufw allow http/tcp')
+    sudo('yes | ufw enable')
+
+
 def deploy(deployment_tar=None):
     if not deployment_tar:
         local(os.path.join(env.root, 'scripts', 'build'))
         deployment_tar = os.path.join(env.root, 'build', 'deployment.tar.gz')
 
     install_dependencies()
+    add_firewall_rules()
 
     put(deployment_tar, '/tmp')
     with cd('/tmp'):
