@@ -66,8 +66,7 @@ jetty stop
 jetty start
 
 ${SCRIPT_ROOT}/add_to_solr ${ROOT}/data/data.csv \
-    8080 \
-    $((($DEBUG)) && echo 100)
+    8080
 
 jetty stop
 cp ${ROOT}/solr/web.xml ${BUILD_DIR}/jetty/webapps/solr/WEB-INF/web.xml

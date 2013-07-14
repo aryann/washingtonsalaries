@@ -16,7 +16,7 @@ import logging
 import sys
 import urllib2
 
-BATCH_SIZE = 500
+BATCH_SIZE = 2000
 COLS = ['agency', 'name', 'title', '2010_salary', '2011_salary', '2012_salary']
 SOLR_URL = 'http://localhost:{port}/solr/update?commit=true'
 
