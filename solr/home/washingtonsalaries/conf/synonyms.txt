@@ -1,0 +1,22 @@
+# Schools
+bellevue college, bellevue community college, bcc, bc
+university of washington, uw
+western washington university, wwu
+washington state university, wsu
+
+# Names
+alexander, alexandra, alex
+andrew, andy, drew
+catherine, cathy
+jennifer, jenifer, jeniffer, jenniffer, jen, jenn, jeny, jenny
+katherine, kathy
+lucas, luke
+michael, mike
+nicolas, nick
+phillip, phil
+richard, dick
+robert, rob, bobby, bob
+sandra, sandy
+timothy, tim
+tobias, toby
+tomas, thomas, tom, tommy

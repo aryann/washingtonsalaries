@@ -31,13 +31,10 @@
    <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0" />
 
    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
-     <analyzer type="index">
+     <analyzer>
        <tokenizer class="solr.StandardTokenizerFactory" />
        <filter class="solr.LowerCaseFilterFactory" />
-     </analyzer>
-     <analyzer type="query">
-       <tokenizer class="solr.StandardTokenizerFactory" />
-       <filter class="solr.LowerCaseFilterFactory" />
+       <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false" />
      </analyzer>
    </fieldType>
  </types>
