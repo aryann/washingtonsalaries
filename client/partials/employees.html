@@ -1,6 +1,8 @@
-<article ng-show="error" class="error">
-  Oops. It looks like your request couldn't be completed.
-</article>
+<div ng-show="error" id="info">
+  <p>
+    Oops. It looks like your request couldn't be completed.
+  </p>
+</div>
 
 <article ng-repeat="employee in response.docs">
   <h1>
